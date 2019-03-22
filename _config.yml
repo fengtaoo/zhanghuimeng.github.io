@@ -68,9 +68,6 @@ theme: material-x
 # sitemap
 sitemap:
   path: sitemap.xml
-  template: ./sitemap_template.xml
-baidusitemap: 
-  path: baidusitemap.xml
 
 math:
   engine: 'katex'
@@ -103,10 +100,18 @@ markdown:
 
 # 全局导入
 import:
+  meta:
+  - "<meta name='theme-color' content='#FFFFFF'>"
+  - "<meta name='msapplication-TileColor' content='#1BC3FB'>"
+  - "<meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>"
   link:
-    - "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.8.0/katex.min.css'>"
+  - "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10./katex.min.css'>"
+  - "<link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>"
+  - "<link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>"
+  - "<link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>"
+  - "<link rel='mask-icon' color='#1BC3FB' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/safari-pinned-tab.svg'>"
+  - "<link rel='manifest' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/site.webmanifest'>"
   # script:
-  
 
 # 页脚社交信息
 social:
