@@ -47,7 +47,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-waves@0.7.6/dist/waves.min.css">
   <% } %>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.6.3/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.1/katex.min.css">
+  <!-- CDN补丁 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10./katex.min.css">
 
   <% if (config.import && config.import.link){ %>
   <% (config.import.link||[]).forEach(function(item){ %>
@@ -98,6 +99,16 @@
       ga('send', 'pageview');
     </script>
   <% } %>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119345306-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-119345306-1');
+  </script>
+
   <% if (config.baidu_analytics_key) { %>
     <!-- ba -->
     <script>

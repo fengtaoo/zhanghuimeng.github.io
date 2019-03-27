@@ -157,7 +157,7 @@ widgets:
         url: http://bellasong.site/
 
 # Google Analytics
-google_analytics_key: UA-119345306-1
+# google_analytics_key: UA-119345306-1
 root_domain: https://zhanghuimeng.github.io/
 
 # LiveRe Comments:
