@@ -79,7 +79,7 @@ USACO的题解和文章翻译合集。
 
 * PROB: The Longest Prefix（题解：[USACO 2.3.1: Longest Prefix](/post/usaco-2-3-1-longest-prefix)）
 * PROB: Cow Pedigrees（题解：[USACO 2.3.2: Cow Pedigrees](/post/usaco-2-3-2-cow-pedigrees)）
-* PROB: Zero Sum
+* PROB: Zero Sum（题解：[USACO 2.3.3: Zero Sum](/post/usaco-2-3-3-zero-sum/)）
 * PROB: Money Systems
 * PROB: Controlling Companies
 
@@ -130,6 +130,22 @@ USACO的题解和文章翻译合集。
 * PROB: Raucous Rockers
 
 ## Chapter 4: Advanced algorithms and difficult drills
+
+### Section 4.1: 
+
+* TEXT: Optimization Techniques
+* PROB: Beef McNuggets
+* PROB: Fence Loops
+
+### Section 4.2: Network Flow
+
+还没做
+
+### Section 4.3: Bignums
+
+还没做
+
+### Section 4.4: (All Tasks)
 
 还没做
 

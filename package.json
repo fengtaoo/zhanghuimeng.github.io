@@ -20,7 +20,6 @@
     "hexo-helper-qrcode": "^1.0.2",
     "hexo-inject": "^1.0.0",
     "hexo-math": "^3.0.4",
-    "hexo-related-popular-posts": "^3.0.3",
     "hexo-renderer-ejs": "^0.2.0",
     "hexo-renderer-less": "^1.0.0",
     "hexo-renderer-markdown-it-plus": "^1.0.4",
