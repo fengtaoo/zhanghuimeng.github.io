@@ -10,6 +10,8 @@ categories: Leetcode
 
 这周的题目都很简单，没有特别难的。
 
+<!--more-->
+
 ## [1005. Maximize Sum Of Array After K Negations](https://leetcode.com/problems/maximize-sum-of-array-after-k-negations/description/)
 
 标记难度：Easy
