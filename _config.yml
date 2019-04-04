@@ -70,7 +70,7 @@ sitemap:
   path: sitemap.xml
 
 math:
-  engine: 'mathjax'
+  engine: 'katex'
   
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
@@ -88,9 +88,9 @@ markdown:
     breaks: true
     linkify: true
   plugins:
-#    - plugin:
-#      name: markdown-it-katex
-#      enable: true
+    - plugin:
+      name: markdown-it-katex
+      enable: true
     - plugin:
       name: markdown-it-mark
       enable: false
@@ -105,7 +105,7 @@ import:
   # - "<meta name='msapplication-TileColor' content='#1BC3FB'>"
   # - "<meta name='msapplication-config' content='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/browserconfig.xml'>"
   link:
-  # - "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css'>"
+    - "<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css'>"
   # - "<link rel='shortcut icon' type='image/x-icon' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicon.ico'>"
   # - "<link rel='icon' type='image/x-icon' sizes='32x32' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/favicon-32x32.png'>"
   # - "<link rel='apple-touch-icon' type='image/png' sizes='180x180' href='https://cdn.jsdelivr.net/gh/xaoxuu/assets@master/favicon/favicons/apple-touch-icon.png'>"
