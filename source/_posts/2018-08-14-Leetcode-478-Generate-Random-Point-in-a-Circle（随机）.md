@@ -2,7 +2,7 @@
 title: Leetcode 478. Generate Random Point in a Circle（随机）
 urlname: leetcode-478-generate-random-point-in-a-circle
 toc: true
-mathjax: false
+mathjax: true
 date: 2018-08-14 17:20:01
 updated: 2018-08-14 22:17:01
 tags: [Leetcode, alg:Math, alg:Random, alg:Rejection Sampling]
