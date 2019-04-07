@@ -105,6 +105,10 @@ markdown:
 #       name: markdown-it-mark
 #       enable: false
 
+# hexo-sage-posts
+sage_posts:
+  filter: hidden    # Change the filter name to fit your need
+
 # material-x theme config
 # (what is the author thinking about?)
 

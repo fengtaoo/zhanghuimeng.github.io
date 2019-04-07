@@ -1,0 +1,136 @@
+---
+title: 近年来NLP领域半监督学习、无监督翻译和预训练（pre-training）领域的进展
+urlname: nlp-semi-supervised-learning-unsupervised-translation-and-pre-training
+toc: true
+mathjax: true
+hidden: true
+date: 2019-04-07 16:29:55
+updated: 2019-04-07 16:29:55
+tags: [NLP]
+categories: NLP
+---
+
+我预计这篇文章要坑，不过我只想综述一下它们之间的关系而已。
+
+本文将谈到以下几篇论文：
+
+<!--more-->
+
+* [Improving Neural Machine Translation Models with Monolingual Data (Sennrich et al. 2015)](http://arxiv.org/abs/1511.06709)
+* [Neural Machine Translation of Rare Words with Subword Units (Sennrich et al. 2015)](http://arxiv.org/abs/1508.07909)
+* [Dual Learning for Machine Translation (He et al. 2016)](http://papers.nips.cc/paper/6469-dual-learning-for-machine-translation)
+* [Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)
+* [Unsupervised Pretraining for Sequence to Sequence Learning (Ramachandran et al. 2016)](http://arxiv.org/abs/1611.02683)
+* [Enriching Word Vectors with Subword Information (Bojanowski et al. 2017)](https://www.mitpressjournals.org/doi/abs/10.1162/tacl_a_00051)
+* [Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)
+* [Unsupervised Neural Machine Translation (Artetxe et al. 2017)](http://arxiv.org/abs/1710.11041)
+* [Word Translation Without Parallel Data (Conneau et al. 2018)](http://arxiv.org/abs/1710.04087)
+* [Deep contextualized word representations (Peters et al. 2018)](https://arxiv.org/abs/1802.05365)
+* [GPT: Improving Language Understanding by Generative Pre-Training (Radford et al. 2018)](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)
+* [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding (Devlin et al. 2018)](http://arxiv.org/abs/1810.04805)
+* [Language Models are Unsupervised Multitask Learners (Radford et al. 2018)](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
+* [Phrase-Based & Neural Unsupervised Machine Translation (Lample et al. 2018)](http://arxiv.org/abs/1804.07755)
+* [Cross-lingual Language Model Pretraining (Lample et al. 2019)](http://arxiv.org/abs/1901.07291)
+
+## [Improving Neural Machine Translation Models with Monolingual Data (Sennrich et al. 2015)](http://arxiv.org/abs/1511.06709)
+
+这篇文章提出了用back-translation进行数据增广的方法，这一方法后来被应用在很多无监督翻译任务中。
+
+不过我还没看这篇文章。不明白细节 // TODO
+
+## [Neural Machine Translation of Rare Words with Subword Units (Sennrich et al. 2015)](http://arxiv.org/abs/1508.07909)
+
+这篇文章提出了用BPE对语料进行预处理的方法，它目前已经成为了主流预处理方法，并衍生出了（// TODO
+
+BPE本身和神经网络没什么关系，它只是把一般的分词扩展到了分字母上，然后把词切成了subword而已。
+
+## [Dual Learning for Machine Translation (He et al. 2016)](http://papers.nips.cc/paper/6469-dual-learning-for-machine-translation)
+
+这篇文章好像首次提出了无监督翻译（是无监督吗？？）中对偶学习的概念。
+
+我还没看。 // TODO
+
+## [Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)
+
+这篇文章比较了各种无监督训练生成distributed sentence vector的方法，并提出了Sequential Denoising Autoencoder（SDAE）和fastText两种新的训练方法。结果我忘了。 // TODO
+
+所谓distributed sentence vector和一般所说的预训练word vector是非常类似的概念，只不过是句子的vector。当然，句子vector可以直接用词来组成，但这样不一定能捕捉到句子内部的语义结构，所以作者希望能够通过其他的训练objective，得到更好的sentence vector。
+
+其中值得注意的就是这两种新的训练方法。Sequential Denoising Autoencoder（SDAE）是Bengio提出的Denoising Autoencoders的修改版（[Extracting and composing robust features with denoising autoencoders (Vincent et al. 2008)](http://portal.acm.org/citation.cfm?doid=1390156.1390294)）。原版的DAE是将训练数据的一部分随机置零然后再重建，这里针对NLP任务的特点，改成了这样：
+
+定义noise function$N(S | p_o, p_x)$，其中$p_o$和$p_x$是超参数，分别表示删除和交换的概率。对于句子$S$中的每一个词$\omega_i$，以$p_o$概率删除$\omega_i$；然后对于每一对互不重合的bigram$\omega_i \omega_{i+1}$，以$p_x$概率交换$\omega_i \omega_{i+1}$。然后就可以在噪音数据上进行训练了。（但是他没给训练目标的公式，我不记得这个过程要不要被back-propagate了 // TODO）
+
+然而我也没好好看最后表示取的是什么，是autoencoder的中间高层representation吗？// TODO
+
+FastSent的idea比较平凡，像是词袋模型和“句袋模型”的结合体：context是前一句+后一句，句子的embedding $s_i$即其中的word embedding的和：
+
+$$s_i = \sum_{\omega \in S_i} u_{\omega}$$
+
+训练时，每个例子的loss就是句子embedding和每个context word的embedding的softmax的和：
+
+$$\sum_{\omega \in S_{i-1} \cup S_{i+1}} \phi(s_i, v_{\omega})$$
+
+我认为这个FastSent的idea和[Enriching Word Vectors with Subword Information (Bojanowski et al. 2017)](https://www.mitpressjournals.org/doi/abs/10.1162/tacl_a_00051)提出的fastText非常类似，只不过一个是在句子和词上训练，一个是在词和字母上训练而已。然而他们并没有互相引用。
+
+到目前为止，无监督句子embedding可能不是研究的重点（word embedding会被用来做模型初始化，sentence embedding不知道拿来干啥……），但是这篇文章中提到的SDAE的方法是比较好的。 // TODO
+
+以及，这是Kyunghyun Cho的研究工作。
+
+## [Unsupervised Pretraining for Sequence to Sequence Learning (Ramachandran et al. 2016)](http://arxiv.org/abs/1611.02683)
+
+把这篇文章列举出来是因为历史原因。
+
+## [Enriching Word Vectors with Subword Information (Bojanowski et al. 2017)](https://www.mitpressjournals.org/doi/abs/10.1162/tacl_a_00051)
+
+这大概是一个BPT + skipgram + word embedding的混合体。
+
+// TODO
+
+## [Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)
+
+## [Unsupervised Neural Machine Translation (Artetxe et al. 2017)](http://arxiv.org/abs/1710.11041)
+
+以及这篇文章也是Kyunghyun Cho的工作，也许和那篇[Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)会更相像一些吧。
+
+## [Word Translation Without Parallel Data (Conneau et al. 2018)](http://arxiv.org/abs/1710.04087)
+
+这篇文章实际上也是G. Lample的工作，可以看作是[Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)的延续。
+
+## [Deep contextualized word representations (Peters et al. 2018)](https://arxiv.org/abs/1802.05365)
+
+这篇文章就是ELMo。它做的是一种“高级word embedding”：学到的东西是bi-LSTM的内部状态。这实际上就是一种预训练了，所以之后它会被和OpenGPT以及BERT比较。
+
+## [GPT: Improving Language Understanding by Generative Pre-Training (Radford et al. 2018)](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)
+
+GPT是最近第一个提出预训练的模型吗？也许是，也许不是，我不记得了。
+
+但不管怎么说，它论文写得不错。相关工作包括三种类型：
+
+* NLP半监督学习：
+  * 用无标注数据计算word/phrase-level统计值，当做feature
+  * 用无标注数据训练word embedding
+  * 用无标注数据训练phrase/sentence-level embedding（此处引用了[Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)作为例子）
+* 无监督预训练：
+  * 首先用LM objective进行训练，然后有监督调参
+  * 主要问题是它们用的都是LSTM
+* 附加训练objective
+
+这使得我现在想修改一下文章结构，并且加上一篇。
+
+## [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding (Devlin et al. 2018)](http://arxiv.org/abs/1810.04805)
+
+这就是大名鼎鼎的BERT了。
+
+## [Language Models are Unsupervised Multitask Learners (Radford et al. 2018)](https://d4mucfpksywv.cloudfront.net/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
+
+GPT-2之前引起了一些争议。
+
+## [Phrase-Based & Neural Unsupervised Machine Translation (Lample et al. 2018)](http://arxiv.org/abs/1804.07755)
+
+更好的无监督翻译。
+
+## [Cross-lingual Language Model Pretraining (Lample et al. 2019)](http://arxiv.org/abs/1901.07291)
+
+甚至更好的无监督翻译。
+
+还是Lample的工作。
