@@ -3,7 +3,6 @@ title: 近年来NLP领域半监督学习、无监督翻译和预训练（pre-tra
 urlname: nlp-semi-supervised-learning-unsupervised-translation-and-pre-training
 toc: true
 mathjax: true
-hidden: true
 date: 2019-04-07 16:29:55
 updated: 2019-04-07 16:29:55
 tags: [NLP]
@@ -22,9 +21,9 @@ categories: NLP
 * [Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)
 * [Unsupervised Pretraining for Sequence to Sequence Learning (Ramachandran et al. 2016)](http://arxiv.org/abs/1611.02683)
 * [Enriching Word Vectors with Subword Information (Bojanowski et al. 2017)](https://www.mitpressjournals.org/doi/abs/10.1162/tacl_a_00051)
+* [Word Translation Without Parallel Data (Conneau et al. 2017)](http://arxiv.org/abs/1710.04087)
 * [Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)
 * [Unsupervised Neural Machine Translation (Artetxe et al. 2017)](http://arxiv.org/abs/1710.11041)
-* [Word Translation Without Parallel Data (Conneau et al. 2018)](http://arxiv.org/abs/1710.04087)
 * [Deep contextualized word representations (Peters et al. 2018)](https://arxiv.org/abs/1802.05365)
 * [GPT: Improving Language Understanding by Generative Pre-Training (Radford et al. 2018)](https://s3-us-west-2.amazonaws.com/openai-assets/research-covers/language-unsupervised/language_understanding_paper.pdf)
 * [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding (Devlin et al. 2018)](http://arxiv.org/abs/1810.04805)
@@ -36,11 +35,15 @@ categories: NLP
 
 这篇文章提出了用back-translation进行数据增广的方法，这一方法后来被应用在很多无监督翻译任务中。
 
-不过我还没看这篇文章。不明白细节 // TODO
+不过我还没看这篇文章。不明白细节
+
+- [ ]: 读文章
 
 ## [Neural Machine Translation of Rare Words with Subword Units (Sennrich et al. 2015)](http://arxiv.org/abs/1508.07909)
 
-这篇文章提出了用BPE对语料进行预处理的方法，它目前已经成为了主流预处理方法，并衍生出了（// TODO
+这篇文章提出了用BPE对语料进行预处理的方法，它目前已经成为了主流预处理方法，并衍生出了（
+
+- [ ]: BPE都衍生出了什么？
 
 BPE本身和神经网络没什么关系，它只是把一般的分词扩展到了分字母上，然后把词切成了subword而已。
 
@@ -48,11 +51,15 @@ BPE本身和神经网络没什么关系，它只是把一般的分词扩展到�
 
 这篇文章好像首次提出了无监督翻译（是无监督吗？？）中对偶学习的概念。
 
-我还没看。 // TODO
+我还没看。
+
+- [x]: 读文章
 
 ## [Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)
 
-这篇文章比较了各种无监督训练生成distributed sentence vector的方法，并提出了Sequential Denoising Autoencoder（SDAE）和fastText两种新的训练方法。结果我忘了。 // TODO
+这篇文章比较了各种无监督训练生成distributed sentence vector的方法，并提出了Sequential Denoising Autoencoder（SDAE）和fastText两种新的训练方法。结果我忘了。 
+
+- [ ]: 所以新的训练方法和旧的有何差异？
 
 所谓distributed sentence vector和一般所说的预训练word vector是非常类似的概念，只不过是句子的vector。当然，句子vector可以直接用词来组成，但这样不一定能捕捉到句子内部的语义结构，所以作者希望能够通过其他的训练objective，得到更好的sentence vector。
 
@@ -72,7 +79,9 @@ $$\sum_{\omega \in S_{i-1} \cup S_{i+1}} \phi(s_i, v_{\omega})$$
 
 我认为这个FastSent的idea和[Enriching Word Vectors with Subword Information (Bojanowski et al. 2017)](https://www.mitpressjournals.org/doi/abs/10.1162/tacl_a_00051)提出的fastText非常类似，只不过一个是在句子和词上训练，一个是在词和字母上训练而已。然而他们并没有互相引用。
 
-到目前为止，无监督句子embedding可能不是研究的重点（word embedding会被用来做模型初始化，sentence embedding不知道拿来干啥……），但是这篇文章中提到的SDAE的方法是比较好的。 // TODO
+到目前为止，无监督句子embedding可能不是研究的重点（word embedding会被用来做模型初始化，sentence embedding不知道拿来干啥……），但是这篇文章中提到的SDAE的方法是比较好的。
+
+- [ ]: SDAE用在哪些工作上了？
 
 以及，这是Kyunghyun Cho的研究工作。
 
@@ -84,17 +93,45 @@ $$\sum_{\omega \in S_{i-1} \cup S_{i+1}} \phi(s_i, v_{\omega})$$
 
 这大概是一个BPT + skipgram + word embedding的混合体。
 
-// TODO
+## [Word Translation Without Parallel Data (Conneau et al. 2017)](http://arxiv.org/abs/1710.04087)
+
+这大概是无监督词典。
 
 ## [Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)
+
+我发现这篇文章也做了一个很好的综述，里面列举了很多无监督的paper，其中有一些我应该阅读一下；而且它也列出了一个理论框架，是我应该去学习的；甚至应该新开一篇文章。
+
+（以及我发现投ICLR的文章一般综述都写得比较好哎）
+
+相关工作包括：
+
+* 半监督：
+  * 用target侧单语数据进行数据增益（[Improving Neural Machine Translation Models with Monolingual Data (Sennrich et al. 2015)](http://arxiv.org/abs/1511.06709)）
+  * 在target侧增加语言模型
+  * 使用单语数据附加autoencoding objective（[Dual Learning for Machine Translation (He et al. 2016)](http://papers.nips.cc/paper/6469-dual-learning-for-machine-translation)）
+* 无监督：
+  * 利用相近语言对
+  * 利用other modalities（这是啥？）
+
+- [ ]: 研究other modalities是什么
+
+---
+
+而作者的想法是这样的：为了能够训练出翻译模型，我们只需保证两种语言共享latent space，然后训练模型，使得对于一种语言的有噪声的句子，它不仅可以重建句子（SDAE），还可以重建它在另一种语言中正确的被翻译版本（back-translation）。为了强制共享latent representation，作者使用了对抗训练方法。模型的初始化使用的是他们之前的工作中提出的无监督词典模型（[Word Translation Without Parallel Data (Conneau et al. 2017)](http://arxiv.org/abs/1710.04087)）。
+
+（这些内容在他们之后的文章中被大大细化了。[Phrase-Based & Neural Unsupervised Machine Translation (Lample et al. 2018)](http://arxiv.org/abs/1804.07755)）
+
+用denoising autoencoder重建句子的训方法和[Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)类似，但此处作者给出了（写得非常繁复的公式）：
+
+![式(1)](denoising-objective-form.png)
+
+这个式子本质上就是说，$x$是句子，记$C(x)$为加噪声之后的句子，$\hat{x}$为模型重建出的句子，最小化重建结果和$x$的差异。噪声模型$C(x)$包括drop word和*slightly* shuffle两个步骤，和[Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)相比略有差别。
+
+- [ ]: 把这篇文章写完。。。
 
 ## [Unsupervised Neural Machine Translation (Artetxe et al. 2017)](http://arxiv.org/abs/1710.11041)
 
 以及这篇文章也是Kyunghyun Cho的工作，也许和那篇[Learning Distributed Representations of Sentences from Unlabelled Data (Hill et al. 2016)](http://arxiv.org/abs/1602.03483)会更相像一些吧。
-
-## [Word Translation Without Parallel Data (Conneau et al. 2018)](http://arxiv.org/abs/1710.04087)
-
-这篇文章实际上也是G. Lample的工作，可以看作是[Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)的延续。
 
 ## [Deep contextualized word representations (Peters et al. 2018)](https://arxiv.org/abs/1802.05365)
 
@@ -126,6 +163,8 @@ GPT是最近第一个提出预训练的模型吗？也许是，也许不是，�
 GPT-2之前引起了一些争议。
 
 ## [Phrase-Based & Neural Unsupervised Machine Translation (Lample et al. 2018)](http://arxiv.org/abs/1804.07755)
+
+这篇文章实际上也是G. Lample的工作，可以看作是[Unsupervised Machine Translation Using Monolingual Corpora Only (Lample et al. 2017)](http://arxiv.org/abs/1711.00043)的延续。
 
 更好的无监督翻译。
 
