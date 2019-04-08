@@ -112,6 +112,8 @@ sage_posts:
 # material-x theme config
 # (what is the author thinking about?)
 
+favicon: /files/favicon.ico
+
 # 全局导入
 import:
   meta:
