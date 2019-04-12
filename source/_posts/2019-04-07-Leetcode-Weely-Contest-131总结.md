@@ -1,5 +1,5 @@
 ---
-title: Leetcode Weely Contest 131总结
+title: Leetcode Weekly Contest 131总结
 urlname: leetcode-weekly-contest-131
 toc: true
 date: 2019-04-07 14:15:52
