@@ -1,6 +1,6 @@
 ---
 title: Leetcode Weekly Contest 130总结
-urlname: Leetcode Weekly Contest 130总结
+urlname: leetcode-weekly-contest-130
 tags:
   - Leetcode
   - Leetcode Contest
@@ -13,7 +13,6 @@ mathjax: true
 date: 2019-03-31 22:16:35
 updated: 2019-04-13 02:28:00
 ---
-
 
 隔了太久补题，我都不太记得Contest 130做了些啥了，只能随便写写。
 
