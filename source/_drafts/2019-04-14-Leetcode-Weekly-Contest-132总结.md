@@ -3,12 +3,14 @@ title: Leetcode Weekly Contest 132总结
 urlname: leetcode-weekly-contest-132
 toc: true
 date: 2019-04-14 13:21:47
-updated: 2019-04-14 13:21:47
-tags: [Leetcode, Leetcode Contest]
+updated: 2019-04-18 22:53:00
+tags: [Leetcode, Leetcode Contest, alg:Tree, alg:Dynamic Programming, alg:Minimax]
 categories: Leetcode
 ---
 
-这周的比赛还是不太难，重点是我认识到了`unordered_map`相比`map`在速度上是有优势的（换言之，`unordered_map`不是彻头彻尾的鸡肋）。
+这周的比赛还是不太难，重点是我认识到了`unordered_map`相比`map`在速度上是有优势的（换言之，`unordered_map`不是彻头彻尾的鸡肋）。[^map]
+
+[^map]: [Ordered map vs. Unordered map – A Performance Study](http://supercomputingblog.com/windows/ordered-map-vs-unordered-map-a-performance-study/)
 
 <!--more-->
 
@@ -165,12 +167,14 @@ public:
 
 标记难度：Medium
 
-提交次数：3/3
+提交次数：8/14
 
 代码效率：
 
 * 愚蠢的map：3064ms
 * 愚蠢的unordered_map：2148ms
+* 愚蠢的hash：2632ms
+* 智慧的hash：116ms
 
 ### 题意
 
@@ -182,7 +186,38 @@ public:
 
 #### 愚蠢的map和unordered_map方法
 
-我什么都没想，直接开了2000个map，用来存公差->具有该公差且以`A[i]`为结尾的等差数列的最长长度。然后就3000ms了，然后leetcode居然还给过了。
+我什么都没想，直接开了2000个map，第`i`个map用来存公差->具有该公差且以`A[i]`为结尾的等差数列的最长长度。然后就3000ms了，然后leetcode居然还给过了。
+
+这种方法的时间复杂度是`O(N^2 * log(N))`（或者`O(N^2)`），空间复杂度是`O(N^3)`。
+
+#### 神奇的map方法
+
+大概意思是开一个map of map，`dp[diff][index]`存从`index`开始的公差为`diff`的等差数列的最长长度。虽然看起来没什么差别，但是听说会快很多，我懒得去思考为什么了……[^lee]
+
+[^lee]: [lee's Solution for Leetcode 1027 - \[Java/C++/Python\] DP](https://leetcode.com/problems/longest-arithmetic-sequence/discuss/274611/JavaC++Python-DP)
+
+#### 愚蠢的hash方法
+
+这两个hash方法是我从sample 44ms solution里找到的。简单来说，就是先算一个hash表，然后对于每一对`j < i`，计算以`d = A[i] - A[j]`为公差，结尾是`A[i]`的等差数列的最长长度。因为有hash表，所以才能这么算……
+
+如果不做任何优化，显然时间复杂度是`O(N^3)`的。
+
+于是我尝试维护一个`map<pair<int, int>, int>`，用来存每一对`(i, d)`对应的等差数列的最长长度，然后就可以递推计算长度了。其中每次在hash表中要找的是小于`j`的最大index，用贪心很容易理解为什么。于是，（纸面上的）时间复杂度降低到`O(N^2)`。
+
+……结果写出来之后又是2000多毫秒。
+
+这个方法有一个显著的缺陷：是DP的，难以合理剪枝。
+
+#### 智慧的hash方法
+
+那就只好不记录之前的状态，直接硬上了；此时可以进行以下剪枝：
+
+* `j + 1 <= ans`时（因为倒数第二项就是`j`了）
+* `len + k < ans`时（`k`是当前最靠前的项的index，`len`是已经找到的数列长度）
+
+不知道还有没有什么更好的剪枝。
+
+这个方法纸面上的复杂度是`O(N^3 * log(N))`的，但还是相当快，我想，这可能就是剪枝和减小常数的威力吧……
 
 ### 代码
 
@@ -203,11 +238,85 @@ public:
             for (int j = 0; j < i; j++) {
                 int d = A[i] - A[j];
                 int len = gapMap[j][d];
-                gapMap[i][d] = len + 1;
+                gapMap[i][d] = max(gapMap[i][d], len + 1);
                 ans = max(len + 1, ans);
             }
         }
         return ans + 1;
+    }
+};
+```
+
+#### 愚蠢的hash
+
+在写代码的时候我甚至发现了`unordered_map`没有为`pair`自带hash的事实，得自己写一个。
+
+……也对吧。
+
+```cpp
+class Solution {
+private:
+    inline int key(int index, int diff) {
+        return index * 20050 + (diff + 10010);
+    }
+    
+public:
+    int longestArithSeqLength(vector<int>& A) {
+        vector<vector<int>> hashIndex(10002);
+        unordered_map<int, int> inddiffMap;  // index, diff
+        int n = A.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++)
+            hashIndex[A[i]].push_back(i);
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                int d = A[i] - A[j];
+                int len = 2;
+                for (int k: hashIndex[A[j]]) {
+                    if (k > j) break;
+                    len = max(len, inddiffMap[key(k, d)] + 1);
+                }
+                ans = max(ans, len);
+                inddiffMap[key(i, d)] = max(inddiffMap[key(i, d)], len);
+            }
+        }
+        return ans;
+    }
+};
+```
+
+#### 智慧的hash
+
+不知道把`lower_bound`直接换成循环有没有可能加速？
+
+```cpp
+class Solution {
+public:
+    int longestArithSeqLength(vector<int>& A) {
+        vector<vector<int>> hashIndex(10002);
+        int n = A.size();
+        int ans = 1;
+        for (int i = 0; i < n; i++)
+            hashIndex[A[i]].push_back(i);
+        for (int i = 0; i < n; i++) {
+            for (int j = i - 1; j >= 0; j--) {
+                if (j != 0 && j + 1 <= ans) break;
+                int d = A[i] - A[j];
+                int len = 1, k = i, val = A[j];
+                while (0 <= val && val <= 10000) {
+                    // 注意lower_bound的用法。。。
+                    auto iter = lower_bound(hashIndex[val].begin(), hashIndex[val].end(), k);
+                    if (iter == hashIndex[val].begin()) break;
+                    --iter;
+                    k = *iter;
+                    if (k + len < ans) break;
+                    len++;
+                    val -= d;
+                }
+                ans = max(ans, len);
+            }
+        }
+        return ans;
     }
 };
 ```
@@ -222,13 +331,17 @@ public:
 
 ### 题意
 
+给定一棵二叉树的先序遍历序列和其中每个结点的深度，复原二叉树。
+
 ### 分析
 
 这又是一道“你好好想想为什么leetcode的树序列化输入长那个样子……”系列的题（我是说，在只已知一种树的遍历序列的前提下，显然没法把树复原出来，那么应该加上什么限制条件才能做到这一点？），这次是先序遍历+深度。
 
+于是就很简单，每次找到树根之后，就能根据深度立刻找到两个（或者一个）子结点在输入序列中的位置，然后对子树和对应子序列递归就行了。
+
 说实话，我觉得这是道水题。
 
-（虽然眼下流行的是stack方法，这种方法更好，但也更难想。）
+（虽然眼下流行的是[迭代的stack方法](https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/discuss/274621/JavaC++Python-Iterative-Stack-Solution)，这种方法更好，但也更难想。）
 
 ### 代码
 
