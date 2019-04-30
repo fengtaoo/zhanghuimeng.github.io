@@ -1,6 +1,6 @@
 ---
 title: 'USACO 4.1.2: Fence Loops（最短路）'
-urlname: '2019-03-31-USACO 4.1.2: Fence Loops（最短路）'
+urlname: usaco-4-1-2-fence-loops
 toc: true
 date: 2019-03-31 20:59:50
 updated: 2019-03-31 20:59:50

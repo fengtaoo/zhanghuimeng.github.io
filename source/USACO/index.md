@@ -131,19 +131,25 @@ USACO的题解和文章翻译合集。
 
 ## Chapter 4: Advanced algorithms and difficult drills
 
-### Section 4.1: 
+### Section 4.1: Optimization
 
 * TEXT: Optimization Techniques
 * PROB: Beef McNuggets
-* PROB: Fence Loops
+* PROB: Fence Loops（题解：[USACO 4.1.2: Fence Loops（最短路）](/post/usaco-4-1-2-fence-loops/)）
 
 ### Section 4.2: Network Flow
 
-还没做
+* TEXT: "Network Flow" Algorithms（翻译：[翻译：网络流算法（USACO）](/post/network-flow-algorithms-usaco/)）
+* PROB: Drainage Ditches（题解：[USACO 4.2.1: Drainage Ditches（最大流）](/post/usaco-4-2-1-drainage-ditches/)）
+* PROB: The Perfect Stall（题解：[USACO 4.2.2: The Perfect Stall（最大匹配）](/post/usaco-4-2-2-the-perfect-stall/)）
+* PROB: Job Processing（题解：[USACO 4.2.3: Job Processing（贪心）](post/usaco-4.2.3-job-processing/)）
 
 ### Section 4.3: Bignums
 
-还没做
+* TEXT: Big Numbers（翻译：[翻译：高精度（USACO）](/post/big-numbers-usaco-translation/)）
+* PROB: Buy Low, Buy Lower（题解：[USACO 4.3.1: Buy Low, Buy Lower（DP+高精度）](/post/usaco-4-3-1-buy-low-buy-lower/)）
+* PROB: Street Race
+* PROB: Letter Game（题解：[USACO 4.3.3: Letter Game（搜索）](/post/usaco-4-3-3-letter-game/)）
 
 ### Section 4.4: (All Tasks)
 
