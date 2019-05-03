@@ -153,7 +153,9 @@ USACO的题解和文章翻译合集。
 
 ### Section 4.4: (All Tasks)
 
-还没做
+* PROB: Shuttle Puzzle（题解：[USACO 4.4.1: Shuttle Puzzle（构造）](/post/usaco-4-4-1-shuttle-puzzle/)）
+* PROB: Pollutant Control
+* PROB: Frame Up
 
 ## Chapter 5: Serious challenges
 
