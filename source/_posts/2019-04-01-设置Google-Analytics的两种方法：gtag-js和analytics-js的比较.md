@@ -1,11 +1,11 @@
 ---
 title: 设置Google Analytics的两种方法：gtag.js和analytics.js的比较
-urlname: 2-methods-of-setting-google Analytics的两种方法：gtag.js和analytics.js的比较
+urlname: 2-methods-of-setting-google-analytics-gtag-js-and-analytics-js
 toc: true
 date: 2019-04-01 15:22:18
-updated: 2019-04-01 15:22:18
+updated: 2019-05-04 21:19:18
 tags: [Google Analytics]
-categories:
+categories: Blogging
 ---
 
 前几天，我发现[material-x](https://github.com/xaoxuu/hexo-theme-material-x)主题的Google Analytics推送功能可能出了一些问题：自从换了这个主题之后，我的用户量骤降了90%，但是搜索结果中的曝光次数和总点击次数没有太大变化。因为我80%的用户都来自点击，所以我猜测问题在于推送而不在于排名。
@@ -66,6 +66,28 @@ categories:
 
 ## 它们的工作原理？
 
-### analytic.js
+说实话，我并不擅长JS，不过可以在以下位置找到这些脚本工作原理的相关说明：
 
-[analytic.js](https://developers.google.com/analytics/devguides/collection/analyticsjs/)是较旧的库，
+* [将 analytics.js 添加到网站中](https://developers.google.com/analytics/devguides/collection/analyticsjs/)：谷歌对analytics.js的简单说明
+* [analytics.js 的工作原理](https://developers.google.com/analytics/devguides/collection/analyticsjs/how-analyticsjs-works)：谷歌对analytics.js工作原理的简单说明
+* [JavaScript 跟踪代码段参考](https://developers.google.com/analytics/devguides/collection/analyticsjs/tracking-snippet-reference)：加注释版的analytics.js跟踪代码段
+* [Google Analytics Code Explanation](https://stackoverflow.com/questions/22716542/google-analytics-code-explanation)：stackoverflow上对analytics.js的详细说明
+* [将 gtag.js 添加到您的网站](https://developers.google.com/analytics/devguides/collection/gtagjs/)：谷歌对gtag.js的简单说明
+* [What is the difference between google tag manager and google analytics?](https://stackoverflow.com/questions/23640645/what-is-the-difference-between-google-tag-manager-and-google-analytics)：stackoverflow上对gtag.js和analytics.js的比较
+
+简单来说，gtag.js是一个标签管理器，它内部完成了调用analytics.js（以及其他的追踪代码）的工作，使得代码更轻量级了。
+
+## 到底出了什么bug？
+
+说实话，我也不知道，但是我猜测有可能是因为倒数第二行的最后一个参数不是`'auto'`。
+
+```js
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    ga('create', '<%- config.google_analytics_key %>', '<%- config.root_domain ? config.root_domain : config.url %>');
+    ga('send', 'pageview');
+</script>
+```
