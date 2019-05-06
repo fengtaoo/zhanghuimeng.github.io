@@ -154,12 +154,25 @@ USACO的题解和文章翻译合集。
 ### Section 4.4: (All Tasks)
 
 * PROB: Shuttle Puzzle（题解：[USACO 4.4.1: Shuttle Puzzle（构造）](/post/usaco-4-4-1-shuttle-puzzle/)）
-* PROB: Pollutant Control
+* PROB: Pollutant Control（题解：[USACO 4.4.2: Pollutant Control（网络流）](/post/usaco-4-4-2-pollutant-control/)）
 * PROB: Frame Up
 
 ## Chapter 5: Serious challenges
 
-还没做
+### Section 5.1: 
+
+* TEXT: Convex Hulls
+* PROB: Fencing the Cows
+* PROB: Starry Night
+* PROB: Musical Themes
+
+### Section 5.2: (Just a task)
+
+### Section 5.3: Heuristics
+
+### Section 5.4: (All tasks)
+
+### Section 5.5: (All tasks)
 
 ## Chapter 6: Contest Practice
 
