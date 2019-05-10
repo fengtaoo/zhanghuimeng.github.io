@@ -180,7 +180,7 @@ $$
 
 ## PP-Join
 
-同时进行Prefix Filtering和Positiona; Filtering，然后进行Verification。
+同时进行Prefix Filtering和Positional Filtering，然后进行Verification。
 
 首先把Jaccard阈值换算成Overlap阈值。由定义，
 
@@ -190,14 +190,24 @@ $$J(x, y)=\frac{|x \cap y|}{|x \cup y|}=\frac{O(x, y)}{|x|+|y|-O(x, y)}$$
 
 因为$J(x, y) \geq t$，因此
 
-$$\begin{aligned} \frac{O(x, y)}{|x|+|y|-O(x, y)} \geq t & \Longleftrightarrow(1+t) O(x, y) \geq t(|x|+|y|) \\
-& \Longleftrightarrow O(x, y) \geq \frac{t}{1+t} \cdot(|x|+|y|) \end{aligned}$$
+{% raw %}
+$$\begin{aligned}
+\frac{O(x, y)}{|x|+|y|-O(x, y)} \geq t & \Longleftrightarrow(1+t) O(x, y) \geq t(|x|+|y|) \\
+& \Longleftrightarrow O(x, y) \geq \frac{t}{1+t} \cdot(|x|+|y|)
+\end{aligned}$$
+{% endraw %}
 
 因此
 
 $$J(x, y) \geq t \Longleftrightarrow O(x, y) \geq \alpha=\frac{t}{1+t} \cdot(|x|+|y|)$$
 
 ### Prefix + Positional Filtering
+
+Prefix Filtering的原理也是鸽巢原理，大概就是，如果$x$和$y$相似，那么$x$的$|x|-\alpha+1$-前缀必然和$y$的$|y|-\alpha+1$-前缀至少有一个重合的token。所以可以取一个前缀长度的上限$p = |x|-\lceil t \cdot|x|\rceil+ 1$，然后只对每条记录的前缀部分建立倒排列表和进行查询。
+
+Positional Filtering的道理是这样的：即使$x$和$y$的前缀中有重合的元素，但如果该元素在两个token表中的位置相差太远，$x$仍然不可能和$y$相似。
+
+记$w = x[i]$，$w$左侧的部分为$x_l(w) = x[1..i]$，右侧的部分为$x_r(w) = x\left[(i+1)..|x|\right]$。若有$O(x, y) \geq \alpha$，则对于$\forall w \in x \cap y$，$O\left(x_{l}(w), y_{l}(w)\right)+\min \left(\left|x_{r}(w)\right|,\left|y_{r}(w)\right|\right) \geq \alpha$。
 
 ![ppjoin算法](ppjoin-filter.png)
 
@@ -228,11 +238,21 @@ $$J(x, y) \geq t \Longleftrightarrow O(x, y) \geq \alpha=\frac{t}{1+t} \cdot(|x|
 16. 调用Verify过程
 17. 返回$S$
 
+上述算法做的是self-join，如果是两个不同的集合，大概需要先把其中一个的前缀的倒排列表都建好。
+
+以及上述算法中最后Verify过程调用时传的$\alpha$不知道是啥。目前我猜测这个$\alpha$不需要传，是在Verify里再重新计算的。
+
+#### 优化：区分Indexing Prefix和Probing Index
+
+实际上我们还可以进一步降低需要插入到倒排列表中的前缀长度，从$l_p=|x|-\lceil t|x|\rceil+ 1$降低到$l_i=|x|-\left\lceil\frac{2 t}{1+t} \cdot|x|\right\rceil+ 1$。但这个看起来只有self-join能用……
+
+证明：// TODO
+
 ### 优化过的Verify
 
 ![verify算法](ppjoin-verify.png)
 
-因为已经知道前缀中重合的token数量了，所以可以进行各种优化。
+因为已经知道前缀中重合的token数量了，所以不需要再完全重新算一遍$x$和$y$重复的token总数。
 
 一些定义：
 
@@ -257,9 +277,33 @@ $$J(x, y) \geq t \Longleftrightarrow O(x, y) \geq \alpha=\frac{t}{1+t} \cdot(|x|
 
 虽然不太理解但是还是直接写好了。
 
+### Suffix Filtering
+
+主要思路是在进行prefix和positional filtering的基础上，进行suffix filtering。记$x$的后缀为$x_s$，如果记录$x$和$y$相似且满足$|y| \leq |x|$，则有
+
+$$H\left(x_s, y_s\right) \leq H_{\max }=2|y|-2\left\lceil\frac{t}{1+t} \cdot(|x|+|y|)\right\rceil |-(\lceil t \cdot|y|\rceil-\lceil t \cdot|x|\rceil)$$
+
+（海明距离的定义为$H(x, y)=|(x-y) \cup(y-x)|$）
+
+下面给出对$H\left(x_s, y_s\right)$下界的一个估计，用来进行剪枝。从$y_s$中任选token $w$，将$x_s$（$y_s$）分成两段：$x_l$（$y_l$）（比$w$小的所有token）和$x_r$（$y_r$）（$w$和比$w$大的所有token）。由于$x_l$（$x_r$）和$y_r$（$y_l$）必然没有重合token，因此$H\left(x_{s}, y_{s}\right)=H\left(x_{l}, y_{l}\right)+H\left(x_{r}, y_{r}\right)$。于是可以估计$H\left(x_s, y_s\right)$的下界如下：
+
+$$H\left(x_{s}, y_{s}\right) \geq \operatorname{abs}\left(\left|x_{l}\right|-\left|y_{l}\right|\right)+\operatorname{abs}\left(\left|x_{r}\right|-\left|y_{r}\right|\right)$$
+
+如果这个下界比$H_{\max }$还大，显然可以把这一对剪掉。
+
+事实上，我们可以递归进行上述分割和计算过程：
+
+* 选择$y_s$中央的token，将$x_s$和$y_s$分别进行分割
+* 计算左侧和右侧海明距离的上界，判断是否已经超过允许范围
+* 对左侧和右侧分别进行递归
+
+其中由于海明距离的限制，不需要在整个$x_s$的范围内查找$w$，而是可以给出一个限制。
+
+然而这个东西实在过于麻烦，我并没有调对。。。
+
 ## Adapt-Join
 
-这个方法可以处理Jaccard Similarity。
+这个方法可以处理Jaccard Similarity。现实是我没时间去读完这篇paper。。。
 
 也是包括Prefix Filtering和Verification两个步骤。
 
