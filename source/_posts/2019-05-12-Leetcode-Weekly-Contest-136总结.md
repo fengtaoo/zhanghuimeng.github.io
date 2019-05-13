@@ -160,13 +160,17 @@ public:
 };
 ```
 
-## [1043. Partition Array for Maximum Sum](https://leetcode.com/problems/partition-array-for-maximum-sum/description/)
+## [1044. Longest Duplicate Substring](https://leetcode.com/problems/longest-duplicate-substring/)
 
-标记难度：Medium
+标记难度：Hard
 
-提交次数：1/1
+提交次数：3/6
 
-代码效率：36.60%（28ms）
+代码效率：
+
+* 二分+RK：1508ms
+* `O(n*log^2(n))`后缀数组：884ms
+* `O(n*log(n))`后缀数组：404ms
 
 ### 题意
 
@@ -196,7 +200,20 @@ $$
 
 对长度`n`进行二分，然后计算每个长度为$n$的子串的哈希值，然后检查其中是否有碰撞，并根据结果调整二分的范围。
 
+---
+
+至于后缀数组，这个东西我也不太会，所以我参考了G4G上的一些文章：
+
+* [Suffix Array | Set 1 (Introduction)](https://www.geeksforgeeks.org/suffix-array-set-1-introduction/)：最navie版本的后缀数组创建（`O(n^2*log(n))`）和搜索（`O(m*log(n))`）
+* [Suffix Array | Set 2 (nLogn Algorithm)](https://www.geeksforgeeks.org/suffix-array-set-2-a-nlognlogn-algorithm/)：利用基数排序实现`O(n*log(n))`的后缀数组创建（如果不用基数排序，只能达到`O(n*log^2(N))`）
+* [Radix Sort](https://www.geeksforgeeks.org/radix-sort/)：基数排序==
+* [kasai’s Algorithm for Construction of LCP array from Suffix Array](https://www.geeksforgeeks.org/%C2%AD%C2%ADkasais-algorithm-for-construction-of-lcp-array-from-suffix-array/)：在`O(n)`内创建LCP数组
+
+不过鉴于在这道题中取LCP数组的最大值就够了，所以我暂时没去细究如何通过LCP在`O(m)`内进行查询……
+
 ### 代码
+
+#### 二分+RK
 
 ```cpp
 class Solution {
@@ -260,6 +277,146 @@ public:
         }
         if (isOk(l + 1)) l++;
         return ans;
+    }
+};
+```
+
+#### 后缀数组
+
+```cpp
+class Solution {
+private:
+    typedef long long int LL;
+    struct SuffixTree {
+        struct Suffix {
+            int index;
+            int rank[2];
+            
+            friend bool operator < (const Suffix& suffix1, const Suffix& suffix2) {
+                if (suffix1.rank[0] != suffix2.rank[0]) return suffix1.rank[0] < suffix2.rank[0];
+                if (suffix1.rank[1] != suffix2.rank[1]) return suffix1.rank[1] < suffix2.rank[1];
+                return suffix1.index < suffix2.index;
+            }
+        };
+        
+        const static int MAXN = 1e5 + 5;
+        char s[MAXN];
+        int suffix[MAXN];
+        Suffix suffixTmp[MAXN];
+        int suffixInv[MAXN];
+        int lcp[MAXN];
+        int n;
+        
+        SuffixTree(const char* a) {
+            strcpy(s, a);
+            n = strlen(s);
+            buildSuffix();
+            buildLCP();
+        }
+        
+        void buildSuffix() {
+            // 对前两个字母排序
+            for (int i = 0; i < n; i++) {
+                suffixTmp[i].index = i;
+                suffixTmp[i].rank[0] = s[i];
+                suffixTmp[i].rank[1] = i < n - 1 ? s[i + 1] : -1;
+            }
+            sort(suffixTmp, suffixTmp + n);
+            
+            // 通过前2^k个字母的排序得到前2^(k+1)个字母的排序
+            for (int k = 1; (1 << k) < n; k++) {
+                // 处理上一次的排序结果
+                int rank = 0;
+                int prevRank[2];
+                // 计算出上一次的真实rank
+                // 注意Suffix::rank相同时，真实rank值也相同（不会+1）
+                for (int i = 0; i < n; i++) {
+                    if (i > 0 && (suffixTmp[i].rank[0] != prevRank[0] || suffixTmp[i].rank[1] != prevRank[1]))
+                        rank++;
+                    memcpy(prevRank, suffixTmp[i].rank, sizeof(prevRank));
+                    // 将上一次的真实rank记录在rank[0]中，并建立倒排列表
+                    suffixTmp[i].rank[0] = rank;
+                    suffixInv[suffixTmp[i].index] = i;
+                }
+                for (int i = 0; i < n; i++) {
+                    // 将rank[1]赋值为s[i+(1<<k)...i+(1<<(k+1))-1]的rank，即新子串后半部分当前的rank
+                    int nextIdx = suffixTmp[i].index + (1 << k);
+                    int nextRank;
+                    if (nextIdx >= n) nextRank = -1;
+                    else nextRank = suffixTmp[suffixInv[nextIdx]].rank[0];
+                    suffixTmp[i].rank[1] = nextRank;
+                }
+                // sort(suffixTmp, suffixTmp + n);
+                radixSort(suffixTmp, n);
+            }
+            
+            for (int i = 0; i < n; i++) {
+                suffix[i] = suffixTmp[i].index;
+                suffixInv[suffix[i]] = i;
+            }
+        }
+        
+        void buildLCP() {
+            int lastLCP = 0;
+            // 考虑s[i]的LCP
+            for (int i = 0; i < n; i++) {
+                // s[i]在后缀数组中是最后一个，所以它的lcp是0
+                if (suffixInv[i] == n - 1) {
+                    lcp[suffixInv[i]] = 0;
+                    lastLCP = 0;
+                    continue;
+                }
+                // s[j]在后缀数组中恰好在s[i]后面
+                int j = suffix[suffixInv[i] + 1];
+                while (i + lastLCP < n && j + lastLCP < n && s[i+lastLCP] == s[j+lastLCP])
+                    lastLCP++;
+                lcp[suffixInv[i]] = lastLCP;
+                // 重复长度-1
+                if (lastLCP > 0)
+                    lastLCP--;
+            }
+        }
+        
+        Suffix tmp[MAXN];
+        int cnt[MAXN];
+        
+        void radixSort(Suffix suffixes[], int n) {
+            for (int i = 1; i >= 0; i--)
+                countSort(suffixes, tmp, n, i);
+        }
+        
+        void countSort(Suffix suffixes[], Suffix tmp[], int n, int digit) {
+            memset(cnt, 0, sizeof(cnt));
+            int* cnt2 = cnt + 1;  // 处理-1的问题
+            for (int i = 0; i < n; i++) {
+                cnt2[suffixes[i].rank[digit]]++;
+            }
+            for (int i = 0; i < n; i++) {
+                cnt2[i] += cnt2[i-1];
+            }
+            for (int i = n - 1; i >= 0; i--) {
+                tmp[--cnt2[suffixes[i].rank[digit]]] = suffixes[i];
+            }
+            memcpy(suffixes, tmp, sizeof(Suffix) * n);
+        }
+        
+        void search() {
+            // TODO
+        }
+    };
+    
+public:
+    string longestDupSubstring(string S) {
+        SuffixTree suffixTree(S.c_str());
+        int maxn = 0, index = -1;
+        for (int i = 0; i < S.length(); i++) {
+            if (suffixTree.lcp[i] > maxn) {
+                maxn = suffixTree.lcp[i];
+                // 注意index
+                index = suffixTree.suffix[i];
+            }
+        }
+        return index == -1 ? "" : S.substr(index, maxn);
     }
 };
 ```
